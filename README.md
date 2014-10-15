@@ -35,18 +35,18 @@ If you use a pip requirements.txt file, add this line:
 
 "optimize" method
 
-  image_optim = ImageOptim()
-  results = image_optim.optimize('/path/to/image.jpg')
-  print(results)
+    image_optim = ImageOptim()
+    results = image_optim.optimize('/path/to/image.jpg')
+    print(results)
 
 You can also use a callback (for async sort of stuff)
 
-  image_optim = ImageOptim()
+    image_optim = ImageOptim()
 
-  def done(results):
-    print(results)
+    def done(results):
+        print(results)
 
-  image_optim.optimize('/path/to/image.jpg', done)
+    image_optim.optimize('/path/to/image.jpg', done)
 
 ## Testing
 
