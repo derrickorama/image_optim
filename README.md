@@ -4,7 +4,7 @@ Python bindings for [image_optim](https://github.com/toy/image_optim)
 
 # Known issues
 
-Does not take advantage of the following optimization tools (the ones that image_optim supports)
+Does not take advantage of the following optimization tools (the ones that image_optim supports). I need to do some detection to see if these things are installed instead of flat out omitting them.
 
 * [pngout](http://www.advsys.net/ken/util/pngout.htm)
 * [advpng](http://advancemame.sourceforge.net/doc-advpng.html)
