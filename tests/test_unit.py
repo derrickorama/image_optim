@@ -10,7 +10,7 @@ from .context import ImageOptim
 
 
 class ImageOptimTests(unittest.TestCase):
-    """image_optim tests"""
+    """\"optimize\" method tests"""
 
     jpg_file_orig = os.path.join(os.path.dirname(__file__), 'assets', 'jpg-example.jpg')
     png_file_orig = os.path.join(os.path.dirname(__file__), 'assets', 'png-example.png')
@@ -86,6 +86,55 @@ class ImageOptimTests(unittest.TestCase):
 
         self.assertIn('images', results)
         self.assertIn('totals', results)
+
+
+class ExceptionTests(unittest.TestCase):
+    """Exception tests"""
+
+    def test_exceptions(self):
+        '''ImageOptim raises an exception if image_optim returns a non-zero return code'''
+        image_optim = ImageOptim()
+        self.assertRaises(Exception, image_optim.optimize, 'idontexist.jpg')
+
+
+class DirectoryOptimizeTests(unittest.TestCase):
+    """directory optimization tests"""
+
+    directory_orig = os.path.join(os.path.dirname(__file__), 'assets')
+
+    @classmethod
+    def get_directory_size(self, directory):
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(directory):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                total_size += os.path.getsize(fp)
+        return total_size
+
+    @classmethod
+    def setUpClass(self):
+        # Get original directory size
+        self.directory_orig_size = self.get_directory_size(self.directory_orig)
+
+        # Copy original JPG file
+        self.directory = os.path.join(os.path.dirname(__file__), 'assets-temp')
+        shutil.copytree(self.directory_orig, self.directory)
+
+        image_optim = ImageOptim()
+        self.results = image_optim.optimize(self.directory)
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.directory)
+
+    def test_optimizes_directory(self):
+        '''ImageOptim optimizes a directory of images'''
+        self.assertGreater(self.directory_orig_size, self.get_directory_size(self.directory))
+
+    def test_includes_image_results(self):
+        '''ImageOptim returns optimization results for each image'''
+
+        self.assertEqual(len(self.results['images']), 3)
 
 
 class ResultsInterpreterTests(unittest.TestCase):

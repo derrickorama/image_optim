@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+import os
 import re
 import subprocess
 
@@ -32,7 +33,7 @@ class ImageOptim():
     def interpret(self, stdout):
         # Split output into lines/columns & images vs totals
         images = []
-        output = [re.split(r'\s+', line) for line in re.split(r'\n', stdout.decode('utf-8').strip())]
+        output = [re.split(r'\s+', line.strip()) for line in re.split(r'\n', stdout.decode('utf-8').strip())]
         total_output = output.pop(len(output) - 1)
 
         # Gather results for each image
@@ -66,14 +67,21 @@ class ImageOptim():
         }
 
     def optimize(self, path, callback=None):
-        proc = subprocess.Popen(['image_optim', path, '--no-pngout', '--no-advpng', '--no-optipng', '--no-pngquant', '--no-jhead', '--no-svgo'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = ['image_optim', path]
+
+        if os.path.isdir(path):
+            command.append('--recursive')
+
+        command = command + ['--no-pngout', '--no-advpng', '--no-optipng', '--no-pngquant', '--no-jhead', '--no-svgo']
+
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
+
+        if proc.returncode != 0:
+            raise Exception('image_optim returned a non-zero return code:\n\n%s' % stderr.decode('utf-8'))
 
         # Convert result to JSON
         results = self.interpret(stdout)
-
-        if proc.returncode != 0:
-            raise Exception('image_optim returned a non-zero return code:\n\n%s' % stderr)
 
         if callback is not None:
             return callback(results)
