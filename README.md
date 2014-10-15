@@ -33,10 +33,16 @@ If you use a pip requirements.txt file, add this line:
 
 # Usage
 
-"optimize" method
+Optimize a single image
 
     image_optim = ImageOptim()
     results = image_optim.optimize('/path/to/image.jpg')
+    print(results)
+
+Optimize an entire directory
+
+    image_optim = ImageOptim()
+    results = image_optim.optimize('/path/to/directory')
     print(results)
 
 You can also use a callback (for async sort of stuff)
