@@ -71,7 +71,7 @@ class ImageOptim():
         if os.path.isdir(path):
             command.append('--recursive')
 
-        command = command + ['--no-pngout', '--no-advpng', '--no-optipng', '--no-pngquant', '--no-jhead', '--no-svgo', '--jpeg-tran']
+        command = command + ['--no-pngout', '--no-advpng', '--no-optipng', '--no-pngquant', '--no-jhead', '--no-svgo', '--no-jpegtran']
 
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
