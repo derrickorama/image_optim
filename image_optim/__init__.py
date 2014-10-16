@@ -1,1 +1,1 @@
-from .core import ImageOptim
+from .core import ImageOptim, NoImagesOptimizedError

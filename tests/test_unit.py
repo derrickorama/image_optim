@@ -6,7 +6,7 @@ import unittest
 
 import nose
 
-from .context import ImageOptim
+from .context import ImageOptim, NoImagesOptimizedError
 
 
 class ImageOptimTests(unittest.TestCase):
@@ -91,10 +91,15 @@ class ImageOptimTests(unittest.TestCase):
 class ExceptionTests(unittest.TestCase):
     """Exception tests"""
 
-    def test_exceptions(self):
+    def test_non_zero(self):
         '''ImageOptim raises an exception if image_optim returns a non-zero return code'''
         image_optim = ImageOptim()
         self.assertRaises(Exception, image_optim.optimize, 'idontexist.jpg')
+
+    def test_no_images_optimized(self):
+        '''ImageOptim raises a NoImagesOptimizedError if image_optim returns no stdout nor stderr'''
+        image_optim = ImageOptim()
+        self.assertRaises(NoImagesOptimizedError, image_optim.optimize, os.path.join(os.path.dirname(__file__), 'assets', 'empty'))
 
 
 class DirectoryOptimizeTests(unittest.TestCase):
@@ -150,7 +155,7 @@ class ResultsInterpreterTests(unittest.TestCase):
 
         stdout = b''' 5.3%  32B  ./path/to/image.jpg\nTotal: 11.57% 191K'''
         results = self.image_optim.interpret(stdout)
-        self.assertEqual(results['images'][0]['ratioSavings'], .053)
+        self.assertEqual(results['images'][0]['ratioSavings'], 5.3)
 
     def test_image_savings_size_bytes(self):
         '''Interpreter gets savings size for each image in bytes when stdout displays bytes'''

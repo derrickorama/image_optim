@@ -25,10 +25,9 @@ class ImageOptim():
 
     def get_percent(self, number):
         if number.endswith('%'):
-            number = float(number[:-1]) * .01
-        else:
-            number = float(number)
-        return round(number, 4)
+            number = number[:-1]
+        number = float(number)
+        return round(number, 2)
 
     def interpret(self, stdout):
         # Split output into lines/columns & images vs totals
@@ -80,6 +79,9 @@ class ImageOptim():
         if proc.returncode != 0:
             raise Exception('image_optim returned a non-zero return code:\n\n%s' % stderr.decode('utf-8'))
 
+        if stdout == b'' and stderr == b'':
+            raise NoImagesOptimizedError(path)
+
         # Convert result to JSON
         results = self.interpret(stdout)
 
@@ -87,3 +89,12 @@ class ImageOptim():
             return callback(results)
         else:
             return results
+
+
+class NoImagesOptimizedError(Exception):
+
+    def __init__(self, path):
+        self.path = path
+
+    def __str__(self):
+        return 'No images were optimized at the given path: %s' % os.path.abspath(self.path)

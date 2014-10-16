@@ -4,4 +4,4 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('..'))
 
-from image_optim import ImageOptim
+from image_optim import ImageOptim, NoImagesOptimizedError
