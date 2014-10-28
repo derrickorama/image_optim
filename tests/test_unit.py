@@ -208,6 +208,13 @@ class ResultsInterpreterTests(unittest.TestCase):
         self.assertEqual(results['images'][0]['sizeSavings'], 0)
         self.assertEqual(results['images'][0]['path'], './path/to/image.jpg')
 
+    def test_files_with_spaces(self):
+        '''Interpreter correctly parses output that includes file names with spaces'''
+
+        stdout = b''' 5.3%  32.25K  ./path/to/image filename with spaces.jpg\nTotal: 11.57% 191K'''
+        results = self.image_optim.interpret(stdout)
+        self.assertEqual(results['images'][0]['path'], './path/to/image filename with spaces.jpg')
+
     # Totals
 
     def test_total_savings_ratio(self):
@@ -215,7 +222,7 @@ class ResultsInterpreterTests(unittest.TestCase):
 
         stdout = b''' 5.3%  32B  ./path/to/image.jpg\nTotal: 11.57% 191K'''
         results = self.image_optim.interpret(stdout)
-        self.assertEqual(results['totals']['ratioSavings'], .1157)
+        self.assertEqual(results['totals']['ratioSavings'], 11.57)
 
     def test_total_savings_size_bytes(self):
         '''Interpreter gets total savings size in bytes when stdout displays bytes'''

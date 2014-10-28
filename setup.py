@@ -11,7 +11,7 @@ with open('LICENSE') as f:
 
 setup(
     name='ImageOptim',
-    version='0.1.1',
+    version='0.2.0',
     description='Python bindings for image_optim (https://github.com/toy/image_optim)',
     long_description=readme,
     author='Derrick Gall',

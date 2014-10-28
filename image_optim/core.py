@@ -29,35 +29,60 @@ class ImageOptim():
         number = float(number)
         return round(number, 2)
 
+    def split_output(self, line):
+        # Parse ratio
+        ratio_match = re.search(r'^[^\s]+\s*', line)
+        ratio = ratio_match.group(0).strip()
+
+        # Parse size
+        size_match = re.search(r'^[^\s]+\s*', line[len(ratio_match.group(0)):])
+        size = size_match.group(0).strip()
+
+        # Consider the rest of the line as the file name
+        # - this captures file names that contains spaces
+        filename = line[(len(size_match.group(0)) + len(ratio_match.group(0))):]
+
+        return ratio, size, filename
+
     def interpret(self, stdout):
         # Split output into lines/columns & images vs totals
         images = []
-        output = [re.split(r'\s+', line.strip()) for line in re.split(r'\n', stdout.decode('utf-8').strip())]
+        output = [line.strip() for line in re.split(r'\n', stdout.decode('utf-8').strip())]
         total_output = output.pop(len(output) - 1)
 
         # Gather results for each image
         for line in output:
-            if line[0] == '------':
-                line[0] = '0'
-                line.append(line[1])
-                line[1] = '0B'
 
+            # Zero out image results if there are no savings
+            if line.find('------') > -1:
+                ratio = '0%'
+                size = '0B'
+                filename = line[6:].strip()
+            else:
+                # Parse image results
+                ratio, size, filename = self.split_output(line)
+
+            # Add to list of images
             images.append({
-                'ratioSavings': self.get_percent(line[0]),
-                'sizeSavings': self.get_bytes(line[1]),
-                'path': line[2]
+                'ratioSavings': self.get_percent(ratio),
+                'sizeSavings': self.get_bytes(size),
+                'path': filename
             })
 
-        # If there were no savings, set "savings" and "sizeSavings" to 0
-        if total_output[1] == '------':
-            total_output[1] = '0B'
-            total_output.append('0B')
+        # Zero out totals when there are no savings
+        if total_output.find('------') > -1:
+            total_ratio = '0%'
+            total_size = '0B'
+        else:
+            # Parse totals
+            # - Note: starting at index 6 so "Total: " doesn't go through
+            total_ratio, total_size, total_filename = self.split_output(total_output[6:].strip())
 
         totals = {
             # Save ratio savings in totals
-            'ratioSavings': round(float(total_output[1][:-1]) * .01, 4),
+            'ratioSavings': round(float(total_ratio[:-1]), 4),
             # Set size savings equal to the # of bytes (based on suffix)
-            'sizeSavings': self.get_bytes(total_output[2])
+            'sizeSavings': self.get_bytes(total_size)
         }
 
         return {
