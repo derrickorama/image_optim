@@ -90,20 +90,45 @@ class ImageOptim():
             'totals': totals
         }
 
-    def optimize(self, path, callback=None):
-        command = ['image_optim', path]
-
-        if os.path.isdir(path):
-            command.append('--recursive')
-
-        command = command + ['--no-pngout', '--no-advpng', '--no-optipng', '--no-pngquant', '--no-jhead', '--no-svgo', '--no-jpegtran']
-
+    def run_command(self, command):
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
 
         if proc.returncode != 0:
-            raise Exception('image_optim returned a non-zero return code:\n\n%s' % stderr.decode('utf-8'))
+            raise subprocess.CalledProcessError(proc.returncode, ' '.join(command), '%s returned a non-zero return code:\n\n%s' % (command[0], stderr.decode('utf-8')))
 
+        return stdout, stderr
+
+    def feature_detection(self):
+        utils = ['pngcrush', 'jpegoptim', 'gifsicle', 'jpegtran', 'pngout', 'advpng', 'optipng', 'pngquant', 'jhead', 'svgo']
+        disabled_utils = []
+
+        # Try getting the help docs for each utility
+        for util in utils:
+            try:
+                stdout, stderr = self.run_command([util, '-h'])
+            except FileNotFoundError:
+                # If a FileNotFoundError error is thrown, the utility is not available
+                disabled_utils.append('--no-%s' % util)
+            except subprocess.CalledProcessError:
+                pass  # who cares
+
+        return disabled_utils
+
+    def optimize(self, path, callback=None):
+        command = ['image_optim', path]
+
+        # Recursively optimize images if a directory is given
+        if os.path.isdir(path):
+            command.append('--recursive')
+
+        # Determine which optimization utilities are available
+        command += self.feature_detection()
+
+        # Run image_optim
+        stdout, stderr = self.run_command(command)
+
+        # If nothing comes through the stdout/stderr, nothing was optimized
         if stdout == b'' and stderr == b'':
             raise NoImagesOptimizedError(path)
 
