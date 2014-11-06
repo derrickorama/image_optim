@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import subprocess
 import unittest
 
 import nose
@@ -100,6 +101,12 @@ class ExceptionTests(unittest.TestCase):
         '''ImageOptim raises a NoImagesOptimizedError if image_optim returns no stdout nor stderr'''
         image_optim = ImageOptim()
         self.assertRaises(NoImagesOptimizedError, image_optim.optimize, os.path.join(os.path.dirname(__file__), 'assets', 'empty'))
+
+    def test_image_optim_errors(self):
+        '''ImageOptim raises exceptions when image_optim utility encounters an error'''
+        text_file = os.path.join(os.path.dirname(__file__), 'assets', 'non-image.txt')
+        image_optim = ImageOptim()
+        self.assertRaises(subprocess.CalledProcessError, image_optim.optimize, text_file)
 
 
 class DirectoryOptimizeTests(unittest.TestCase):

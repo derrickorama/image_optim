@@ -4,6 +4,7 @@ import math
 import os
 import re
 import subprocess
+import sys
 import traceback
 
 
@@ -96,7 +97,7 @@ class ImageOptim():
         stdout, stderr = proc.communicate()
 
         if proc.returncode != 0:
-            raise subprocess.CalledProcessError(proc.returncode, ' '.join(command), '%s returned a non-zero return code:\n\n%s' % (command[0], stderr.decode('utf-8')))
+            raise subprocess.CalledProcessError(proc.returncode, ' '.join(command), 'Captured stdout/stderr:\n%s\n%s' % (stdout.decode('utf-8'), stderr.decode('utf-8')))
 
         return stdout, stderr
 
@@ -130,9 +131,10 @@ class ImageOptim():
         try:
             stdout, stderr = self.run_command(command)
         except subprocess.CalledProcessError as e:
-            print(stdout)
-            print(stderr)
-            traceback.print_tb(e)
+            (ex_type, value, tb) = sys.exc_info()
+            traceback.print_tb(tb)
+            print(e.output)
+            raise e
 
         # If nothing comes through the stdout/stderr, nothing was optimized
         if stdout == b'' and stderr == b'':
