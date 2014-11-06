@@ -4,6 +4,7 @@ import math
 import os
 import re
 import subprocess
+import traceback
 
 
 class ImageOptim():
@@ -126,7 +127,12 @@ class ImageOptim():
         command += self.feature_detection()
 
         # Run image_optim
-        stdout, stderr = self.run_command(command)
+        try:
+            stdout, stderr = self.run_command(command)
+        except subprocess.CalledProcessError as e:
+            print(stdout)
+            print(stderr)
+            traceback.print_tb(e)
 
         # If nothing comes through the stdout/stderr, nothing was optimized
         if stdout == b'' and stderr == b'':
