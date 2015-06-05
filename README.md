@@ -2,7 +2,7 @@
 
 Python bindings for [image_optim](https://github.com/toy/image_optim).
 
-Note: this will also autodetect the optimization tools available and apply the --no-UTILITY_NAME options when executing image_optim.
+*Note: this will also autodetect the optimization tools available and apply the --no-UTILITY_NAME options when executing image_optim.*
 
 # Requirements
 
@@ -43,8 +43,25 @@ You can also use a callback (for async sort of stuff)
 
     image_optim.optimize('/path/to/image.jpg', done)
 
+# Development
+
+1. Install or build image_optim (Ruby Gem) from source
+
+       gem install image_optim
+
+2. Install gifsicle, jpegoptim, and pngcrush (see https://github.com/toy/image_optim for details)
+
+3. Create and "source" into a Python 3 virtual environment, for example
+
+       pyvenv-3.4 ENV
+       source ENV/bin/activate
+
+4. Install dependencies with "make"
+
+       make
+
 ## Testing
 
-Use nosetests
+Run "make test"
 
-    nosetests tests
+       make test

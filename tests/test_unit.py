@@ -95,7 +95,7 @@ class ExceptionTests(unittest.TestCase):
     def test_non_zero(self):
         '''ImageOptim raises an exception if image_optim returns a non-zero return code'''
         image_optim = ImageOptim()
-        self.assertRaises(Exception, image_optim.optimize, 'idontexist.jpg')
+        self.assertRaises(subprocess.CalledProcessError, image_optim.optimize, 'idontexist.jpg')
 
     def test_no_images_optimized(self):
         '''ImageOptim raises a NoImagesOptimizedError if image_optim returns no stdout nor stderr'''

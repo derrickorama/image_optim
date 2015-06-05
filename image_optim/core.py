@@ -131,9 +131,6 @@ class ImageOptim():
         try:
             stdout, stderr = self.run_command(command)
         except subprocess.CalledProcessError as e:
-            (ex_type, value, tb) = sys.exc_info()
-            traceback.print_tb(tb)
-            print(e.output)
             raise e
 
         # If nothing comes through the stdout/stderr, nothing was optimized
