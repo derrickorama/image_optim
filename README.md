@@ -34,6 +34,12 @@ Optimize an entire directory
     results = image_optim.optimize('/path/to/directory')
     print(results)
 
+Exclude paths
+
+    image_optim = ImageOptim()
+    results = image_optim.optimize('/path/to/directory', exclude='filename.*')
+    print(results)
+
 You can also use a callback (for async sort of stuff)
 
     image_optim = ImageOptim()
