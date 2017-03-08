@@ -125,15 +125,22 @@ class DirectoryOptimizeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        # Get original directory size
-        self.directory_orig_size = self.get_directory_size(self.directory_orig)
-
         # Copy original JPG file
         self.directory = os.path.join(os.path.dirname(__file__), 'assets-temp')
         shutil.copytree(self.directory_orig, self.directory)
 
+        # Copy JPG file to be excluded
+        excluded_original_path = os.path.join(os.path.dirname(__file__), 'assets', 'jpg-example.jpg')
+        self.excluded_temp_path = os.path.join(os.path.dirname(__file__), 'assets-temp', 'excluded.jpg')
+        shutil.copyfile(excluded_original_path, self.excluded_temp_path)
+        # Get original size for comparison
+        self.excluded_original_size = os.path.getsize(self.excluded_temp_path)
+
+        # Get original total directory size
+        self.directory_orig_size = self.get_directory_size(self.directory)
+
         image_optim = ImageOptim()
-        self.results = image_optim.optimize(self.directory)
+        self.results = image_optim.optimize(self.directory, exclude='excluded.*')
 
     @classmethod
     def tearDownClass(self):
@@ -147,6 +154,11 @@ class DirectoryOptimizeTests(unittest.TestCase):
         '''ImageOptim returns optimization results for each image'''
 
         self.assertEqual(len(self.results['images']), 3)
+
+    def test_excludes_defined_excluded_glob(self):
+        '''ImageOptim excludes images as defined by the exclude glob'''
+
+        self.assertEqual(self.excluded_original_size, os.path.getsize(self.excluded_temp_path))
 
 
 class ResultsInterpreterTests(unittest.TestCase):

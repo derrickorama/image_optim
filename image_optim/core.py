@@ -117,12 +117,17 @@ class ImageOptim():
 
         return disabled_utils
 
-    def optimize(self, path, callback=None):
+    def optimize(self, path, exclude=None, callback=None):
         command = ['image_optim', path]
 
         # Recursively optimize images if a directory is given
         if os.path.isdir(path):
             command.append('--recursive')
+
+        # Exclude paths as defined by "exclude" glob
+        if exclude is not None:
+            command.append('--exclude')
+            command.append(exclude)
 
         # Determine which optimization utilities are available
         command += self.feature_detection()
