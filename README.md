@@ -14,7 +14,7 @@ Python bindings for [image_optim](https://github.com/toy/image_optim).
 
 Pip install:
 
-    pip install -e git+git@github.com:derrickorama/imageoptim.git#egg=imageoptim
+    pip install -e git+https://github.com/derrickorama/image_optim.git#egg=imageoptim
 
 If you use a pip requirements.txt file, add this line:
 
